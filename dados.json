@@ -1,0 +1,62 @@
+{
+    "usuarios": [
+      {
+        "usuario": "admin",
+        "senha": "1234",
+        "tipo": "admin"
+      },
+      {
+        "usuario": "financeiro",
+        "senha": "1234",
+        "tipo": "financeiro"
+      },
+      {
+        "usuario": "brunno",
+        "senha": "1234",
+        "tipo": "comum"
+      },
+      {
+        "usuario": "cauane",
+        "senha": "1234",
+        "tipo": "comum"
+      },
+      {
+        "usuario": "gabi",
+        "senha": "1234",
+        "tipo": "comum"
+      },
+      {
+        "usuario": "thiago",
+        "senha": "1234",
+        "tipo": "comum"
+      },
+      {
+        "usuario": "suely",
+        "senha": "1234",
+        "tipo": "comum"
+      },
+      {
+        "usuario": "geovana",
+        "senha": "1234",
+        "tipo": "comum"
+      },
+      {
+        "usuario": "lorena",
+        "senha": "1234",
+        "tipo": "comum"
+      }
+    ],
+    "equipes": {
+      "brunno": "Bem Aventurados",
+      "cauane": "Voz que Clama",
+      "thiago": "Insaciáveis",
+      "suely": "Obstinados",
+      "geovana": "Sheepers",
+      "lorena": "Maanaim",
+      "felipe": "Estevans",
+      "luana": "Estevans",
+      "gabi": "Estevans"
+    },
+    "valoresSemanais": {},
+    "theme": "light"
+  }
