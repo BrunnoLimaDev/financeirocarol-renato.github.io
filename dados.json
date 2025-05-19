@@ -4,55 +4,55 @@
       "usuario": "admin",
       "senha": "1234",
       "tipo": "admin",
-      "token": "ed473c21-df80-4c80-9186-8c82b7bcc8a6"
+      "token": "818fd9cc-923d-46cb-bd28-e86094e0eca0"
     },
     {
       "usuario": "financeiro",
       "senha": "1234",
       "tipo": "financeiro",
-      "token": "7f93c51c-d149-412e-94b9-05638c6138cd"
+      "token": "d4b40b72-fede-407e-acb0-00b80cd0d004"
     },
     {
       "usuario": "brunno",
       "senha": "1234",
       "tipo": "comum",
-      "token": "d7e06d47-b1bf-49de-8227-4418ef7ee71a"
+      "token": "074246fe-f95b-49cb-8e55-e53b7fe97122"
     },
     {
       "usuario": "cauane",
       "senha": "1234",
       "tipo": "comum",
-      "token": "e6934e37-10eb-43d4-a3e5-adaeb37a92ed"
+      "token": "4278800b-9e03-4f76-a771-5dc106af1477"
     },
     {
       "usuario": "gabi",
       "senha": "1234",
       "tipo": "comum",
-      "token": "c24c5ff3-fa7b-4a32-af5e-d4bd5dac6885"
+      "token": "0c8d29e7-b9f2-4c6d-9327-ca7d97799690"
     },
     {
       "usuario": "thiago",
       "senha": "1234",
       "tipo": "comum",
-      "token": "e6749f5a-5908-4276-8135-d473a99d24e4"
+      "token": "196a1011-2194-4035-a71a-0e7b448b7dd1"
     },
     {
       "usuario": "suely",
       "senha": "1234",
       "tipo": "comum",
-      "token": "31be7eb9-e55f-4f9d-8a9c-04e6cdeda711"
+      "token": "dccfa8dd-2e5c-4515-a2dd-a54155a663c1"
     },
     {
       "usuario": "geovana",
       "senha": "1234",
       "tipo": "comum",
-      "token": "ed29a40d-6e84-40dc-90c9-14508044c31b"
+      "token": "07c84ad1-1a7d-42cf-a1c5-6ef5a17b410e"
     },
     {
       "usuario": "lorena",
       "senha": "1234",
       "tipo": "comum",
-      "token": "6547bb32-2368-4193-a0c1-1dd2b6cfe6c9"
+      "token": "37e49393-29a7-4e66-9081-4e6fdda5c89b"
     }
   ],
   "equipes": {
