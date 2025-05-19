@@ -2,142 +2,1283 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Sistema para gerenciamento de relatórios semanais de valores" />
   <title>Relatório Semanal de Valores</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 flex flex-col min-h-screen">
-  <header class="bg-blue-600 text-white p-4">
-    <h1 class="text-2xl font-bold">Relatório Semanal de Valores</h1>
-  </header>
-
-  <main class="flex-grow p-4">
-    <div id="loading" class="text-center">
-      <p>Carregando dados...</p>
-    </div>
-
-    <div id="login" class="max-w-md mx-auto bg-white p-6 rounded shadow-md hidden">
-      <h2 class="text-xl font-bold mb-4">Login</h2>
-      <form id="loginForm">
-        <div class="mb-4">
-          <label for="username" class="block text-sm font-medium">Usuário</label>
-          <input type="text" id="username" class="w-full border rounded p-2" required />
-        </div>
-        <div class="mb-4">
-          <label for="password" class="block text-sm font-medium">Senha</label>
-          <input type="password" id="password" class="w-full border rounded p-2" required />
-        </div>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Entrar
-        </button>
-      </form>
-    </div>
-
-    <div id="dashboard" class="max-w-4xl mx-auto bg-white p-6 rounded shadow-md hidden">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">Bem-vindo</h2>
-        <button id="logout" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-          Sair
-        </button>
-      </div>
-      <div id="content"></div>
-    </div>
-
-    <div id="comprovante" class="max-w-4xl mx-auto bg-white p-6 rounded shadow-md hidden">
-      <h2 class="text-xl font-bold mb-4">Visualizar Comprovante</h2>
-      <div id="comprovanteContent"></div>
-      <button id="back" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">
-        Voltar
-      </button>
-    </div>
-  </main>
-
-  <footer class="bg-gray-800 text-white p-4 text-center">
-    <p>Este sistema está hospedado no GitHub Pages. Os dados são salvos automaticamente no repositório GitHub.</p>
-  </footer>
-
-  <script>
-    // Configuração da API do GitHub
-    const GITHUB_TOKEN = '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'; // Substitua pelo seu token de acesso pessoal
-    const OWNER = 'BrunnoLimaDev'; // Substitua pelo seu usuário do GitHub
-    const REPO = 'financeirocarol-renato.github.io'; // Substitua pelo nome do repositório
-    const PATH = 'dados.json'; // Caminho do arquivo no repositório
-
-    // Função para salvar dados no GitHub
-    async function saveToGitHub(data) {
-      try {
-        // Obter o conteúdo atual do arquivo (para atualizar, precisamos do SHA)
-        const response = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
-          headers: {
-            Authorization: `token ${GITHUB_TOKEN}`,
-            Accept: 'application/vnd.github.v3+json',
-          },
-        });
-        const fileData = await response.json();
-        const sha = fileData.sha;
-
-        // Enviar o novo conteúdo
-        const content = btoa(JSON.stringify(data)); // Codificar em base64
-        const updateResponse = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
-          method: 'PUT',
-          headers: {
-            Authorization: `token ${GITHUB_TOKEN}`,
-            Accept: 'application/vnd.github.v3+json',
-          },
-          body: JSON.stringify({
-            message: 'Atualizar dados.json automaticamente',
-            content: content,
-            sha: sha,
-          }),
-        });
-
-        if (updateResponse.ok) {
-          console.log('Dados salvos no GitHub com sucesso.');
-        } else {
-          console.error('Erro ao salvar no GitHub:', updateResponse.statusText);
-        }
-      } catch (error) {
-        console.error('Erro ao salvar no GitHub:', error);
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #F5F7FA;
+      color: #333;
+      line-height: 1.6;
+      padding: 16px;
+      transition: background 0.3s, color 0.3s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body.dark-mode {
+      background: #1A202C;
+      color: #E2E8F0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+    body.dark-mode .container {
+      background: #2D3748;
+    }
+    h2 {
+      font-size: 24px;
+      font-weight: 500;
+      color: #4A90E2;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    h3 {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    h4 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Roboto', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      touch-action: manipulation;
+    }
+    body.dark-mode input,
+    body.dark-mode textarea,
+    body.dark-mode select {
+      background: #4A5568;
+      color: #E2E8F0;
+      border-color: #718096;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #4A90E2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+      inputmode: decimal;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    button {
+      background: linear-gradient(90deg, #4A90E2, #357ABD);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 44px;
+      font-size: 14px;
+      transition: background 0.2s, transform 0.1s;
+      touch-action: manipulation;
+    }
+    button:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+    button:active {
+      background: linear-gradient(90deg, #357ABD, #4A90E2);
+      transform: scale(0.98);
+    }
+    button:disabled {
+      background: #B0BEC5;
+      cursor: not-allowed;
+    }
+    .btn-logout {
+      background: linear-gradient(90deg, #DC3545, #B02A37);
+    }
+    .btn-logout:active {
+      background: linear-gradient(90deg, #B02A37, #DC3545);
+    }
+    .btn-preview {
+      background: linear-gradient(90deg, #28A745, #218838);
+      padding: 10px 14px;
+      font-size: 13px;
+      min-height: 44px;
+      margin-bottom: 8px;
+    }
+    .btn-preview:active {
+      background: linear-gradient(90deg, #218838, #28A745);
+    }
+    .btn-delete {
+      background: linear-gradient(90deg, #DC3545, #B02A37);
+      padding: 10px 14px;
+      font-size: 13px;
+      min-height: 44px;
+      margin-left: 8px;
+    }
+    .btn-delete:active {
+      background: linear-gradient(90deg, #B02A37, #DC3545);
+    }
+    .btn-delete-user {
+      background: linear-gradient(90deg, #DC3545, #B02A37);
+      padding: 10px 14px;
+      font-size: 13px;
+      min-height: 44px;
+      margin-left: 8px;
+    }
+    .btn-delete-user:active {
+      background: linear-gradient(90deg, #B02A37, #DC3545);
+    }
+    .btn-change-password {
+      background: linear-gradient(90deg, #6B46C1, #553C9A);
+      padding: 10px 14px;
+      font-size: 13px;
+      min-height: 44px;
+      margin-left: 8px;
+    }
+    .btn-change-password:active {
+      background: linear-gradient(90deg, #553C9A, #6B46C1);
+    }
+    .btn-create-equipe {
+      background: linear-gradient(90deg, #28A745, #218838);
+      padding: 12px;
+      font-size: 14px;
+      min-height: 44px;
+    }
+    .btn-create-equipe:active {
+      background: linear-gradient(90deg, #218838, #28A745);
+    }
+    .btn-toggle-theme {
+      background: linear-gradient(90deg, #4A5568, #2D3748);
+      padding: 10px;
+      font-size: 13px;
+      min-height: 44px;
+      margin-left: 8px;
+    }
+    .btn-toggle-theme:active {
+      background: linear-gradient(90deg, #2D3748, #4A5568);
+    }
+    .hidden {
+      display: none;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    body.dark-mode table {
+      background: #2D3748;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #E5E7EB;
+      font-size: 14px;
+    }
+    body.dark-mode th,
+    body.dark-mode td {
+      border-bottom: 1px solid #4A5568;
+    }
+    th {
+      background: #F9FAFB;
+      font-weight: 500;
+      color: #4A90E2;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      white-space: nowrap;
+    }
+    body.dark-mode th {
+      background: #4A5568;
+      color: #63B3ED;
+    }
+    tr:nth-child(even) {
+      background: #F9FAFB;
+    }
+    body.dark-mode tr:nth-child(even) {
+      background: #2D3748;
+    }
+    tr:hover {
+      background: #ECF4FF;
+    }
+    body.dark-mode tr:hover {
+      background: #4A5568;
+    }
+    .success-message, .error-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: fadeIn 0.3s ease-in;
+    }
+    .success-message {
+      background: #E6F4EA;
+      color: #28A745;
+      border: 1px solid #28A745;
+    }
+    body.dark-mode .success-message {
+      background: #2F855A;
+      border-color: #48BB78;
+    }
+    .error-message {
+      background: #FEE2E2;
+      color: #DC3545;
+      border: 1px solid #DC3545;
+    }
+    body.dark-mode .error-message {
+      background: #9B2C2C;
+      border-color: #F56565;
+    }
+    a.comprovante-link {
+      color: #4A90E2;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13px;
+    }
+    a.comprovante-link:hover {
+      text-decoration: underline;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px;
+      max-width: 95%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      position: relative;
+      transition: background 0.3s;
+    }
+    body.dark-mode .modal-content {
+      background: #2D3748;
+    }
+    .modal-content img, .modal-content embed {
+      max-width: 100%;
+      max-height: 70vh;
+      display: block;
+      margin: 0 auto;
+      border-radius: 8px;
+    }
+    .modal-content p {
+      text-align: center;
+      color: #DC3545;
+      font-size: 14px;
+    }
+    body.dark-mode .modal-content p {
+      color: #F56565;
+    }
+    .close-modal {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #DC3545;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 36px;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .close-modal:hover {
+      background: #B02A37;
+    }
+    .value-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .value-list p {
+      font-size: 14px;
+      color: #333;
+      margin: 0;
+    }
+    body.dark-mode .value-list p {
+      color: #E2E8F0;
+    }
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .password-strength {
+      font-size: 12px;
+      margin-top: 4px;
+      color: #666;
+    }
+    .password-strength.weak { color: #DC3545; }
+    .password-strength.medium { color: #F6A623; }
+    .password-strength.strong { color: #28A745; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+      .container {
+        padding: 16px;
+        border-radius: 8px;
+        min-height: calc(100vh - 24px);
+      }
+      h2 { font-size: 22px; margin-bottom: 16px; }
+      h3 { font-size: 18px; }
+      h4 { font-size: 16px; }
+      input, textarea, select, button {
+        font-size: 13px;
+        padding: 10px;
+        margin: 6px 0;
+      }
+      button, .btn-preview, .btn-delete, .btn-delete-user, .btn-change-password, .btn-create-equipe, .btn-toggle-theme {
+        padding: 10px;
+        font-size: 13px;
+        min-height: 44px;
+      }
+      .btn-delete, .btn-delete-user, .btn-change-password, .btn-toggle-theme {
+        margin-left: 6px;
+      }
+      table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      th, td {
+        padding: 10px;
+        font-size: 13px;
+        min-width: 100px;
+      }
+      .value-list p { font-size: 13px; }
+      a.comprovante-link { font-size: 12px; }
+      .modal-content {
+        max-width: 90%;
+        max-height: 85vh;
+        padding: 16px;
+      }
+      .modal-content img, .modal-content embed { max-height: 60vh; }
+      .close-modal {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        line-height: 32px;
       }
     }
-
-    // Função para salvar dados no localStorage e no GitHub
-    function saveData(data) {
-      localStorage.setItem('dados', JSON.stringify(data));
-      saveToGitHub(data); // Salvar automaticamente no GitHub
+    @media (max-width: 360px) {
+      body { padding: 8px; }
+      .container { padding: 12px; }
+      input, textarea, select, button { font-size: 12px; padding: 8px; }
+      th, td { padding: 8px; font-size: 12px; }
+      .btn-preview, .btn-delete, .btn-delete-user, .btn-change-password, .btn-create-equipe, .btn-toggle-theme {
+        padding: 8px;
+        font-size: 12px;
+      }
     }
+  </style>
+</head>
+<body>
+  <div class="container" id="loginArea">
+    <h2>Login</h2>
+    <form id="loginForm" aria-label="Formulário de login">
+      <input type="text" id="login" placeholder="Usuário" autocomplete="username" required aria-label="Nome de usuário">
+      <input type="password" id="senha" placeholder="Senha" autocomplete="current-password" required aria-label="Senha">
+      <button type="submit" aria-label="Entrar no sistema">Entrar</button>
+    </form>
+    <div id="mensagem" role="alert"></div>
+  </div>
 
-    // Exemplo de lógica de login (adapte conforme necessário)
-    document.getElementById('loginForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      // Lógica de autenticação aqui
-      document.getElementById('login').classList.add('hidden');
-      document.getElementById('dashboard').classList.remove('hidden');
-      // Carregar dados iniciais
-      const data = JSON.parse(localStorage.getItem('dados') || '{}');
-      saveData(data); // Salvar no GitHub ao iniciar
+  <div class="container hidden" id="areaUsuario">
+    <div class="flex justify-between items-center mb-4">
+      <h3 id="boasVindas" aria-live="polite"></h3>
+      <button onclick="toggleTheme()" class="btn-toggle-theme" aria-label="Alternar tema claro/escuro">🌙 Tema</button>
+    </div>
+    <div id="opcoes" role="main"></div>
+    <button onclick="voltarLogin()" class="btn-logout" aria-label="Sair do sistema">Voltar ao Login</button>
+  </div>
+
+  <div id="previewModal" class="modal" role="dialog" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closePreviewModal()" aria-label="Fechar visualização">×</button>
+      <div id="previewContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // Simulated JSON data storage
+    let appData = {
+      usuarios: [
+        { usuario: "admin", senha: "1234", tipo: "admin" },
+        { usuario: "financeiro", senha: "1234", tipo: "financeiro" },
+        { usuario: "brunno", senha: "1234", tipo: "comum" },
+        { usuario: "cauane", senha: "1234", tipo: "comum" },
+        { usuario: "gabi", senha: "1234", tipo: "comum" },
+        { usuario: "thiago", senha: "1234", tipo: "comum" },
+        { usuario: "suely", senha: "1234", tipo: "comum" },
+        { usuario: "geovana", senha: "1234", tipo: "comum" },
+        { usuario: "lorena", senha: "1234", tipo: "comum" }
+      ],
+      equipes: {
+        "brunno": "Bem Aventurados",
+        "cauane": "Voz que Clama",
+        "thiago": "Insaciáveis",
+        "suely": "Obstinados",
+        "geovana": "Sheepers",
+        "lorena": "Maanaim",
+        "felipe": "Estevans",
+        "luana": "Estevans",
+        "gabi": "Estevans"
+      },
+      valoresSemanais: {},
+      theme: "light"
+    };
+
+    // Data Persistence
+    const Storage = {
+      loadData: () => {
+        try {
+          const savedData = localStorage.getItem('appData');
+          if (savedData) {
+            appData = JSON.parse(savedData);
+            console.log('Dados carregados com sucesso do localStorage');
+          }
+        } catch (e) {
+          console.error('Erro ao carregar dados:', e);
+        }
+      },
+      saveData: () => {
+        try {
+          localStorage.setItem('appData', JSON.stringify(appData));
+          console.log('Dados salvos com sucesso no localStorage');
+        } catch (e) {
+          console.error('Erro ao salvar dados:', e);
+          UI.showMessage('mensagem', 'Erro ao salvar dados.', 'error');
+        }
+      }
+    };
+
+    // Utility Functions
+    const Utils = {
+      generateUUID: () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      ),
+      debounce: (func, wait) => {
+        let timeout;
+        return (...args) => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+      },
+      sanitizeInput: (input) => {
+        if (!input) return '';
+        const div = document.createElement('div');
+        div.textContent = input;
+        return div.innerHTML;
+      },
+      validatePasswordStrength: (password) => {
+        const minLength = password.length >= 8;
+        const hasUpper = /[A-Z]/.test(password);
+        const hasLower = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecial = /[!@#$%^&*]/.test(password);
+        const score = [minLength, hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length;
+        return score >= 4 ? 'strong' : score >= 2 ? 'medium' : 'weak';
+      },
+      formatCurrency: (value) => `R$ ${parseFloat(value).toFixed(2).replace('.', ',')}`,
+      formatDate: (date) => date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      getSemanaAtual: () => {
+        const hoje = new Date();
+        const dia = hoje.getDay();
+        const domingo = new Date(hoje);
+        domingo.setDate(hoje.getDate() - dia);
+        const sabado = new Date(domingo);
+        sabado.setDate(domingo.getDate() + 6);
+        return `${Utils.formatDate(domingo)} a ${Utils.formatDate(sabado)}`;
+      },
+      isValidSemanaFormat: (semana) => {
+        const regex = /^\d{2}\/\d{2}\/\d{4} a \d{2}\/\d{2}\/\d{4}$/;
+        if (!regex.test(semana)) return false;
+        const [start, end] = semana.split(' a ');
+        const startDate = new Date(start.split('/').reverse().join('-'));
+        const endDate = new Date(end.split('/').reverse().join('-'));
+        return !isNaN(startDate) && !isNaN(endDate) && endDate > startDate;
+      }
+    };
+
+    // State Management
+    const State = {
+      get usuarios() { return appData.usuarios; },
+      set usuarios(value) { appData.usuarios = value; Storage.saveData(); },
+      get equipes() { return appData.equipes; },
+      set equipes(value) { appData.equipes = value; Storage.saveData(); },
+      get valoresSemanais() { return appData.valoresSemanais; },
+      set valoresSemanais(value) { appData.valoresSemanais = value; Storage.saveData(); },
+      get theme() { return appData.theme; },
+      set theme(value) { appData.theme = value; Storage.saveData(); },
+      usuarioLogado: null,
+      sessionToken: null,
+      saveAll: () => {
+        Storage.saveData();
+      }
+    };
+
+    // Data Migration
+    const migrateData = () => {
+      // Normalize user names to lowercase and ensure tokens
+      State.usuarios = State.usuarios.map(user => ({
+        ...user,
+        usuario: user.usuario.toLowerCase(),
+        token: user.token || Utils.generateUUID()
+      }));
+
+      // Normalize equipe keys to lowercase
+      const newEquipes = {};
+      for (const usuario in State.equipes) {
+        newEquipes[usuario.toLowerCase()] = State.equipes[usuario];
+      }
+      State.equipes = newEquipes;
+
+      // Normalize valoresSemanais keys to lowercase
+      const newValoresSemanais = {};
+      for (const semana in State.valoresSemanais) {
+        let newSemana = semana;
+        if (semana.includes('-')) {
+          const [startDate, endDate] = semana.split(' a ');
+          const convertDate = (oldDateStr) => {
+            const [year, month, day] = oldDateStr.split('-').map(Number);
+            return Utils.formatDate(new Date(year, month - 1, day));
+          };
+          newSemana = `${convertDate(startDate)} a ${convertDate(endDate)}`;
+        }
+        newValoresSemanais[newSemana] = {};
+        for (const usuario in State.valoresSemanais[semana]) {
+          newValoresSemanais[newSemana][usuario.toLowerCase()] = State.valoresSemanais[semana][usuario];
+        }
+      }
+      State.valoresSemanais = newValoresSemanais;
+
+      // Migrate old data structures
+      for (const semana in State.valoresSemanais) {
+        for (const usuario in State.valoresSemanais[semana]) {
+          const data = State.valoresSemanais[semana][usuario];
+          if (!Array.isArray(data)) {
+            const valores = [];
+            for (const subEquipe in data) {
+              if (Array.isArray(data[subEquipe])) {
+                valores.push(...data[subEquipe].map(v => ({ valor: v, observacao: "", comprovante: "" })));
+              }
+            }
+            State.valoresSemanais[semana][usuario] = valores;
+          } else if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'number') {
+            State.valoresSemanais[semana][usuario] = data.map(v => ({ valor: v, observacao: "", comprovante: "" }));
+          } else if (Array.isArray(data) && data.length > 0 && data[0].valor && !data[0].comprovante) {
+            State.valoresSemanais[semana][usuario] = data.map(item => ({ ...item, comprovante: "" }));
+          }
+        }
+      }
+
+      State.saveAll();
+    };
+
+    // UI Management
+    const UI = {
+      showMessage: (elementId, message, type) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.innerText = message;
+          element.className = `${type}-message`;
+          element.setAttribute('role', 'alert');
+          
+          // Auto-hide message after 5 seconds
+          setTimeout(() => {
+            element.innerText = '';
+            element.className = '';
+          }, 5000);
+        }
+      },
+      setLoading: (element, isLoading) => {
+        element.classList.toggle('loading', isLoading);
+        element.disabled = isLoading;
+      },
+      updatePasswordStrength: Utils.debounce((inputId, strengthId) => {
+        const input = document.getElementById(inputId);
+        const strength = document.getElementById(strengthId);
+        if (input && strength) {
+          const strengthLevel = Utils.validatePasswordStrength(input.value);
+          strength.textContent = `Força da senha: ${strengthLevel === 'strong' ? 'Forte' : strengthLevel === 'medium' ? 'Média' : 'Fraca'}`;
+          strength.className = `password-strength ${strengthLevel}`;
+        }
+      }, 300)
+    };
+
+    // Modal Management
+    const Modal = {
+      openPreview: (comprovante) => {
+        const modal = document.getElementById("previewModal");
+        const previewContent = document.getElementById("previewContent");
+        if (!modal || !previewContent) {
+          UI.showMessage('mensagem', 'Erro interno: modal não encontrado.', 'error');
+          return;
+        }
+
+        previewContent.innerHTML = "";
+        if (comprovante.startsWith("data:image/")) {
+          previewContent.innerHTML = `<img src="${comprovante}" alt="Visualização do comprovante" aria-describedby="modalTitle">`;
+        } else if (comprovante.startsWith("data:application/pdf")) {
+          previewContent.innerHTML = `<embed src="${comprovante}" type="application/pdf" width="100%" height="500px" aria-describedby="modalTitle">`;
+        } else {
+          previewContent.innerHTML = `<p>Erro: Formato de comprovante não suportado.</p>`;
+        }
+
+        modal.style.display = "flex";
+        modal.focus();
+      },
+      closePreview: () => {
+        const modal = document.getElementById("previewModal");
+        const previewContent = document.getElementById("previewContent");
+        if (modal && previewContent) {
+          modal.style.display = "none";
+          previewContent.innerHTML = "";
+        }
+      }
+    };
+
+    // Authentication
+    const Auth = {
+      login: async (event) => {
+        event.preventDefault();
+        const loginInput = document.getElementById("login");
+        const senhaInput = document.getElementById("senha");
+        if (!loginInput || !senhaInput) {
+          UI.showMessage('mensagem', 'Erro interno: campos de login não encontrados.', 'error');
+          return;
+        }
+
+        const login = Utils.sanitizeInput(loginInput.value.trim().toLowerCase());
+        const senha = senhaInput.value;
+
+        if (!login || !senha) {
+          UI.showMessage('mensagem', 'Por favor, preencha usuário e senha.', 'error');
+          return;
+        }
+
+        const user = State.usuarios.find(u => u.usuario.toLowerCase() === login);
+        if (!user) {
+          UI.showMessage('mensagem', `Usuário "${login}" não encontrado.`, 'error');
+          return;
+        }
+
+        if (user.senha !== senha) {
+          UI.showMessage('mensagem', `Senha incorreta para "${login}".`, 'error');
+          return;
+        }
+
+        State.usuarioLogado = user;
+        State.sessionToken = user.token;
+        document.getElementById("loginArea")?.classList.add("hidden");
+        document.getElementById("areaUsuario")?.classList.remove("hidden");
+        document.getElementById("boasVindas").innerText = `Bem-vindo, ${user.usuario}!`;
+        UI.showMessage('mensagem', 'Login bem-sucedido!', 'success');
+        UserInterface.renderOptions(user);
+      },
+      logout: () => {
+        document.getElementById("loginArea")?.classList.remove("hidden");
+        document.getElementById("areaUsuario")?.classList.add("hidden");
+        State.usuarioLogado = null;
+        State.sessionToken = null;
+        document.getElementById("login").value = '';
+        document.getElementById("senha").value = '';
+        UI.showMessage('mensagem', 'Logout realizado com sucesso.', 'success');
+      },
+      verifyToken: (token) => State.sessionToken === token
+    };
+
+    // User Interface Rendering
+    const UserInterface = {
+      renderOptions: (user) => {
+        const opcoes = document.getElementById("opcoes");
+        if (!opcoes) return;
+
+        opcoes.innerHTML = "";
+        const semanaAtual = Utils.getSemanaAtual();
+        if (!State.valoresSemanais[semanaAtual]) State.valoresSemanais[semanaAtual] = {};
+
+        if (user.tipo === "comum") {
+          UserInterface.renderComum(user, semanaAtual, opcoes);
+        } else if (user.tipo === "financeiro") {
+          UserInterface.renderFinanceiro(semanaAtual, opcoes);
+        } else if (user.tipo === "admin") {
+          UserInterface.renderAdmin(opcoes);
+        }
+      },
+      renderComum: (user, semanaAtual, opcoes) => {
+        if (!State.valoresSemanais[semanaAtual][user.usuario]) {
+          State.valoresSemanais[semanaAtual][user.usuario] = [];
+        }
+        const equipeUsuario = State.equipes[user.usuario] || user.usuario;
+        opcoes.innerHTML = `
+          <p style="font-weight: 500;">Equipe: ${Utils.sanitizeInput(equipeUsuario)}</p>
+          <form id="formAdicionarValor" aria-label="Adicionar novo valor">
+            <input type="number" id="valorInput" placeholder="Digite um valor (R$)" step="0.01" min="0.01" autocomplete="off" required aria-label="Valor em reais">
+            <textarea id="observacaoInput" placeholder="Digite uma observação (opcional)" aria-label="Observação"></textarea>
+            <input type="file" id="comprovanteInput" accept="image/*,application/pdf" title="Anexar Comprovante (opcional, máx. 5MB)" aria-label="Anexar comprovante">
+            <button type="submit" aria-label="Adicionar valor">Adicionar Valor</button>
+          </form>
+          <div id="mensagemValor" role="alert"></div>
+          <div id="listaValores" aria-live="polite"></div>
+        `;
+        document.getElementById("formAdicionarValor").addEventListener("submit", Data.addValue);
+        UserInterface.updateValueList(user.usuario);
+      },
+      renderFinanceiro: (semanaAtual, opcoes) => {
+        const semanas = Object.keys(State.valoresSemanais).sort().reverse();
+        opcoes.innerHTML = `
+          <h4>Selecionar semana:</h4>
+          <select id="semanasSelect" onchange="UserInterface.showWeekValues(this.value)" aria-label="Selecionar semana">
+            ${semanas.length > 0 ? semanas.map(s => `<option value="${s}" ${s === semanaAtual ? 'selected' : ''}>${s}</option>`).join("") : `<option value="">Nenhuma semana disponível</option>`}
+          </select>
+          <button onclick="Reports.generatePDF()" aria-label="Exportar relatório como PDF">Exportar PDF</button>
+          <div id="relatorioSemana" aria-live="polite"></div>
+        `;
+        UserInterface.showWeekValues(semanaAtual);
+      },
+      renderAdmin: (opcoes) => {
+        const equipeOptions = Object.values(State.equipes).filter((v, i, a) => a.indexOf(v) === i);
+        opcoes.innerHTML = `
+          <h4>Criar Nova Equipe</h4>
+          <form id="formCriarEquipe" aria-label="Criar nova equipe">
+            <input type="text" id="novaEquipe" placeholder="Nome da equipe" autocomplete="off" required aria-label="Nome da equipe">
+            <button type="submit" class="btn-create-equipe" aria-label="Criar equipe">Criar Equipe</button>
+          </form>
+          <h4>Criar Novo Usuário</h4>
+          <form id="formCriarUsuario" aria-label="Criar novo usuário">
+            <input type="text" id="novoUsuario" placeholder="Nome do usuário" autocomplete="off" required aria-label="Nome do usuário">
+            <input type="password" id="novaSenha" placeholder="Senha" autocomplete="off" required aria-label="Senha do usuário">
+            <div id="passwordStrength" class="password-strength"></div>
+            <select id="tipoUsuario" required aria-label="Tipo de usuário">
+              <option value="comum">Comum</option>
+              <option value="financeiro">Financeiro</option>
+              <option value="admin">Admin</option>
+            </select>
+            <select id="equipeUsuario" aria-label="Equipe do usuário">
+              <option value="Nenhuma">Nenhuma Equipe</option>
+              ${equipeOptions.map(e => `<option value="${e}">${e}</option>`).join("")}
+            </select>
+            <button type="submit" aria-label="Criar usuário">Criar Usuário</button>
+          </form>
+          <div id="mensagemAdmin" role="alert"></div>
+          <h4>Gerenciar Usuários</h4>
+          <div id="listaUsuarios" aria-live="polite"></div>
+        `;
+        document.getElementById("formCriarUsuario").addEventListener("submit", Admin.createUser);
+        document.getElementById("formCriarEquipe").addEventListener("submit", Admin.createTeam);
+        document.getElementById("novaSenha").addEventListener("input", () => UI.updatePasswordStrength("novaSenha", "passwordStrength"));
+        UserInterface.updateUserList();
+      },
+      updateValueList: (usuario) => {
+        const semanaAtual = Utils.getSemanaAtual();
+        const valores = State.valoresSemanais[semanaAtual]?.[usuario] || [];
+        const div = document.getElementById("listaValores");
+        if (!div) return;
+
+        if (valores.length === 0) {
+          div.innerHTML = "<p style='color: #666;'>Nenhum valor registrado nesta semana.</p>";
+          return;
+        }
+
+        const equipeUsuario = State.equipes[usuario] || usuario;
+        let html = "<table><tr><th>#</th><th>Equipe</th><th>Valor</th><th>Observação</th><th>Comprovante</th><th>Ações</th></tr>";
+        valores.forEach((item, i) => {
+          html += `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${Utils.sanitizeInput(equipeUsuario)}</td>
+              <td>${Utils.formatCurrency(item.valor)}</td>
+              <td>${Utils.sanitizeInput(item.observacao) || '-'}</td>
+              <td>${item.comprovante ? `<button class="btn-preview" onclick="Modal.openPreview('${item.comprovante.replace(/'/g, "\\'")}')" aria-label="Visualizar comprovante">Visualizar</button>` : '-'}</td>
+              <td>
+                <button onclick="Data.editValue('${semanaAtual}', '${usuario}', ${i})" aria-label="Editar valor">Editar</button>
+                <button class="btn-delete" onclick="Data.deleteValue('${semanaAtual}', '${usuario}', ${i})" aria-label="Excluir valor">Excluir</button>
+              </td>
+            </tr>`;
+        });
+        html += "</table>";
+        const total = valores.reduce((a, b) => a + parseFloat(b.valor), 0) || 0;
+        html += `<p style="font-weight: 500; margin-top: 12px;">Total ${Utils.sanitizeInput(equipeUsuario)}: ${Utils.formatCurrency(total)}</p>`;
+        div.innerHTML = html;
+      },
+      updateUserList: () => {
+        const div = document.getElementById("listaUsuarios");
+        if (!div) return;
+
+        let html = "<table><tr><th>Usuário</th><th>Tipo</th><th>Equipe</th><th>Ações</th></tr>";
+        State.usuarios.forEach(user => {
+          const equipe = State.equipes[user.usuario] || "-";
+          const isCurrentUser = user.usuario === State.usuarioLogado?.usuario;
+          html += `
+            <tr>
+              <td>${Utils.sanitizeInput(user.usuario)}</td>
+              <td>${Utils.sanitizeInput(user.tipo)}</td>
+              <td>${Utils.sanitizeInput(equipe)}</td>
+              <td>
+                <button class="btn-change-password" onclick="Admin.changePassword('${user.usuario}')" aria-label="Alterar senha de ${user.usuario}">Alterar Senha</button>
+                <button class="btn-delete-user" onclick="Admin.deleteUser('${user.usuario}')" ${isCurrentUser ? 'disabled' : ''} aria-label="Excluir usuário ${user.usuario}">Excluir</button>
+              </td>
+            </tr>`;
+        });
+        html += "</table>";
+        div.innerHTML = html;
+      },
+      showWeekValues: (semana) => {
+        const data = State.valoresSemanais[semana];
+        const div = document.getElementById("relatorioSemana");
+        if (!div) return;
+
+        if (!data || Object.keys(data).length === 0) {
+          div.innerHTML = "<p style='color: #666;'>Nenhum valor registrado para esta semana.</p>";
+          return;
+        }
+
+        let html = "<table><tr><th>Equipe</th><th>Valores</th><th>Observações</th><th>Comprovantes</th><th>Total</th></tr>";
+        let totalGeral = 0;
+
+        for (const usuario in data) {
+          const equipe = State.equipes[usuario] || usuario;
+          const valores = Array.isArray(data[usuario]) ? data[usuario] : [];
+          const total = valores.reduce((a, b) => a + parseFloat(b.valor), 0) || 0;
+          totalGeral += total;
+
+          const valoresHTML = valores.length > 0 ? `<div class="value-list">${valores.map(item => `<p>${Utils.formatCurrency(item.valor)}</p>`).join("")}</div>` : "-";
+          const observacoesHTML = valores.length > 0 ? `<div class="value-list">${valores.map(item => `<p>${Utils.sanitizeInput(item.observacao) || "-"}</p>`).join("")}</div>` : "-";
+          const comprovantesHTML = valores.length > 0 ? `<div class="value-list">${valores.map((item, i) => item.comprovante ? `<p><button class="btn-preview" onclick="Modal.openPreview('${item.comprovante.replace(/'/g, "\\'")}')" aria-label="Visualizar comprovante">Visualizar</button> <a href="${item.comprovante}" download="comprovante-${usuario}-${i}" class="comprovante-link" aria-label="Baixar comprovante">Download</a></p>` : `<p>-</p>`).join("")}</div>` : "-";
+          html += `<tr><td>${Utils.sanitizeInput(equipe)}</td><td>${valoresHTML}</td><td>${observacoesHTML}</td><td>${comprovantesHTML}</td><td>${Utils.formatCurrency(total)}</td></tr>`;
+        }
+
+        html += `</table><h3 style="text-align:right; margin-top: 12px;">Total Geral: ${Utils.formatCurrency(totalGeral)}</h3>`;
+        div.innerHTML = html;
+      },
+      updateTeamDropdown: () => {
+        const equipeSelect = document.getElementById("equipeUsuario");
+        if (!equipeSelect) return;
+
+        const equipeOptions = Object.values(State.equipes).filter((v, i, a) => a.indexOf(v) === i);
+        equipeSelect.innerHTML = `
+          <option value="Nenhuma">Nenhuma Equipe</option>
+          ${equipeOptions.map(e => `<option value="${e}">${e}</option>`).join("")}
+        `;
+      }
+    };
+
+    // Data Operations
+    const Data = {
+      addValue: async (event) => {
+        event.preventDefault();
+        const form = event.target;
+        UI.setLoading(form.querySelector('button'), true);
+
+        const valorInput = document.getElementById("valorInput")?.value;
+        const observacaoInput = Utils.sanitizeInput(document.getElementById("observacaoInput")?.value.trim() || "");
+        const comprovanteInput = document.getElementById("comprovanteInput")?.files[0];
+        let valor;
+        try {
+          valor = parseFloat(valorInput.replace(',', '.'));
+          if (isNaN(valor) || valor <= 0) throw new Error('Valor inválido');
+        } catch (e) {
+          UI.showMessage("mensagemValor", "Erro: Digite um valor válido maior que zero (ex: 50,25).", "error");
+          UI.setLoading(form.querySelector('button'), false);
+          return;
+        }
+
+        if (!State.usuarioLogado || !Auth.verifyToken(State.usuarioLogado.token)) {
+          UI.showMessage("mensagemValor", "Erro: Sessão inválida.", "error");
+          UI.setLoading(form.querySelector('button'), false);
+          return;
+        }
+
+        const equipeUsuario = State.equipes[State.usuarioLogado.usuario] || State.usuarioLogado.usuario;
+        const semanaAtual = Utils.getSemanaAtual();
+
+        let comprovante = "";
+        if (comprovanteInput) {
+          const maxSize = 5 * 1024 * 1024; // 5MB
+          if (comprovanteInput.size > maxSize) {
+            UI.showMessage("mensagemValor", "Erro: O comprovante deve ter no máximo 5MB.", "error");
+            UI.setLoading(form.querySelector('button'), false);
+            return;
+          }
+
+          try {
+            comprovante = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
+              reader.readAsDataURL(comprovanteInput);
+            });
+            // Check base64 size (approximate)
+            if (comprovante.length > 7 * 1024 * 1024) { // ~5MB after base64 encoding
+              UI.showMessage("mensagemValor", "Erro: Comprovante muito grande após conversão.", "error");
+              UI.setLoading(form.querySelector('button'), false);
+              return;
+            }
+          } catch (e) {
+            UI.showMessage("mensagemValor", "Erro ao processar o comprovante.", "error");
+            UI.setLoading(form.querySelector('button'), false);
+            return;
+          }
+        }
+
+        if (!State.valoresSemanais[semanaAtual]) State.valoresSemanais[semanaAtual] = {};
+        if (!State.valoresSemanais[semanaAtual][State.usuarioLogado.usuario]) {
+          State.valoresSemanais[semanaAtual][State.usuarioLogado.usuario] = [];
+        }
+
+        State.valoresSemanais[semanaAtual][State.usuarioLogado.usuario].push({ valor, observacao: observacaoInput, comprovante });
+        State.saveAll();
+        UserInterface.updateValueList(State.usuarioLogado.usuario);
+        UI.showMessage("mensagemValor", `Valor ${Utils.formatCurrency(valor)} adicionado com sucesso para ${equipeUsuario}!`, "success");
+        form.reset();
+        UI.setLoading(form.querySelector('button'), false);
+      },
+      editValue: (semana, usuario, index) => {
+        if (State.usuarioLogado?.usuario !== usuario && State.usuarioLogado?.tipo !== "admin" && State.usuarioLogado?.tipo !== "financeiro") {
+          UI.showMessage("mensagemValor", "Erro: Sem permissão para editar.", "error");
+          return;
+        }
+
+        const item = State.valoresSemanais[semana][usuario][index];
+        const novoValor = prompt("Digite o novo valor (R$):", item.valor.toString().replace('.', ','));
+        if (novoValor === null) return; // User cancelled
+
+        const novaObservacao = prompt("Digite a nova observação (opcional):", item.observacao);
+        if (novaObservacao === null) return; // User cancelled
+
+        let valorNumerico;
+        try {
+          valorNumerico = parseFloat(novoValor.replace(',', '.'));
+          if (isNaN(valorNumerico) || valorNumerico <= 0) throw new Error('Valor inválido');
+        } catch (e) {
+          UI.showMessage("mensagemValor", "Erro: Valor inválido. Use o formato 1234,56.", "error");
+          return;
+        }
+
+        if (confirm(`Alterar para ${Utils.formatCurrency(valorNumerico)} e observação "${novaObservacao || ''}"?`)) {
+          State.valoresSemanais[semana][usuario][index] = {
+            valor: valorNumerico,
+            observacao: Utils.sanitizeInput(novaObservacao || ""),
+            comprovante: item.comprovante
+          };
+          State.saveAll();
+          UserInterface.updateValueList(usuario);
+          UI.showMessage("mensagemValor", `Valor alterado para ${Utils.formatCurrency(valorNumerico)} com sucesso!`, "success");
+        }
+      },
+      deleteValue: (semana, usuario, index) => {
+        if (State.usuarioLogado?.usuario !== usuario && State.usuarioLogado?.tipo !== "admin" && State.usuarioLogado?.tipo !== "financeiro") {
+          UI.showMessage("mensagemValor", "Erro: Sem permissão para excluir.", "error");
+          return;
+        }
+
+        const item = State.valoresSemanais[semana][usuario][index];
+        if (confirm(`Excluir o valor ${Utils.formatCurrency(item.valor)} com observação "${item.observacao || ''}"?`)) {
+          State.valoresSemanais[semana][usuario].splice(index, 1);
+          if (State.valoresSemanais[semana][usuario].length === 0) {
+            delete State.valoresSemanais[semana][usuario];
+            if (Object.keys(State.valoresSemanais[semana]).length === 0) {
+              delete State.valoresSemanais[semana];
+            }
+          }
+          State.saveAll();
+          UserInterface.updateValueList(usuario);
+          UI.showMessage("mensagemValor", `Valor ${Utils.formatCurrency(item.valor)} excluído com sucesso!`, "success");
+        }
+      }
+    };
+
+    // Admin Operations
+    const Admin = {
+      createUser: (event) => {
+        event.preventDefault();
+        const form = event.target;
+        UI.setLoading(form.querySelector('button'), true);
+
+        const username = Utils.sanitizeInput(document.getElementById("novoUsuario")?.value.trim().toLowerCase());
+        const password = document.getElementById("novaSenha")?.value;
+        const tipo = document.getElementById("tipoUsuario")?.value;
+        const equipe = document.getElementById("equipeUsuario")?.value;
+
+        if (!username || username.length < 3 || username.length > 20 || !/^[a-zA-Z0-9]+$/.test(username)) {
+          UI.showMessage("mensagemAdmin", "Erro: Usuário deve ter 3-20 caracteres alfanuméricos.", "error");
+          UI.setLoading(form.querySelector('button'), false);
+          return;
+        }
+
+        if (State.usuarios.some(u => u.usuario.toLowerCase() === username)) {
+          UI.showMessage("mensagemAdmin", "Erro: Usuário já existe.", "error");
+          UI.setLoading(form.querySelector('button'), false);
+          return;
+        }
+
+        if (!password || Utils.validatePasswordStrength(password) === 'weak') {
+          UI.showMessage("mensagemAdmin", "Erro: Senha fraca. Use pelo menos 8 caracteres com letras maiúsculas, minúsculas, números e caracteres especiais.", "error");
+          UI.setLoading(form.querySelector('button'), false);
+          return;
+        }
+
+        if (!["comum", "financeiro", "admin"].includes(tipo)) {
+          UI.showMessage("mensagemAdmin", "Erro: Tipo de usuário inválido.", "error");
+          UI.setLoading(form.querySelector('button'), false);
+          return;
+        }
+
+        const novoUsuario = { usuario: username, senha: password, tipo, token: Utils.generateUUID() };
+        State.usuarios.push(novoUsuario);
+        if (equipe && equipe !== "Nenhuma" && tipo === "comum") {
+          State.equipes[username] = equipe;
+        }
+        State.saveAll();
+        UserInterface.updateUserList();
+        UserInterface.updateTeamDropdown();
+        UI.showMessage("mensagemAdmin", `Usuário ${username} criado com sucesso!`, "success");
+        form.reset();
+        UI.setLoading(form.querySelector('button'), false);
+      },
+      deleteUser: (targetUser) => {
+        if (targetUser === State.usuarioLogado?.usuario) {
+          UI.showMessage("mensagemAdmin", "Erro: Não é possível excluir o usuário logado.", "error");
+          return;
+        }
+
+        const user = State.usuarios.find(u => u.usuario === targetUser);
+        if (!user) {
+          UI.showMessage("mensagemAdmin", "Erro: Usuário não encontrado.", "error");
+          return;
+        }
+
+        if (confirm(`Excluir o usuário ${targetUser} e todos os seus dados? Esta ação não pode ser desfeita.`)) {
+          State.usuarios = State.usuarios.filter(u => u.usuario !== targetUser);
+          for (const semana in State.valoresSemanais) {
+            if (State.valoresSemanais[semana][targetUser]) {
+              delete State.valoresSemanais[semana][targetUser];
+              if (Object.keys(State.valoresSemanais[semana]).length === 0) {
+                delete State.valoresSemanais[semana];
+              }
+            }
+          }
+          if (State.equipes[targetUser]) {
+            delete State.equipes[targetUser];
+          }
+          State.saveAll();
+          UserInterface.updateUserList();
+          UI.showMessage("mensagemAdmin", `Usuário ${targetUser} excluído com sucesso!`, "success");
+        }
+      },
+      changePassword: (targetUser) => {
+        const novaSenha = prompt(`Digite a nova senha para ${targetUser}:`);
+        if (!novaSenha) return; // User cancelled
+        
+        if (Utils.validatePasswordStrength(novaSenha) === 'weak') {
+          UI.showMessage("mensagemAdmin", "Erro: Nova senha fraca. Use pelo menos 8 caracteres com letras maiúsculas, minúsculas, números e caracteres especiais.", "error");
+          return;
+        }
+
+        if (confirm(`Alterar a senha de ${targetUser} para a nova senha?`)) {
+          const user = State.usuarios.find(u => u.usuario === targetUser);
+          if (user) {
+            user.senha = novaSenha;
+            user.token = Utils.generateUUID();
+            State.saveAll();
+            UserInterface.updateUserList();
+            UI.showMessage("mensagemAdmin", `Senha de ${targetUser} alterada com sucesso!`, "success");
+          } else {
+            UI.showMessage("mensagemAdmin", "Erro: Usuário não encontrado.", "error");
+          }
+        }
+      },
+      createTeam: (event) => {
+        event.preventDefault();
+        const form = event.target;
+        UI.setLoading(form.querySelector('button'), true);
+
+        const equipeName = Utils.sanitizeInput(document.getElementById("novaEquipe")?.value.trim());
+        if (!equipeName || equipeName.length < 3 || equipeName.length > 30 || !/^[a-zA-Z0-9\s]+$/.test(equipeName)) {
+          UI.showMessage("mensagemAdmin", "Erro: Nome da equipe deve ter 3-30 caracteres alfanuméricos.", "error");
+          UI.setLoading(form.querySelector('button'), false);
+          return;
+        }
+
+        if (Object.values(State.equipes).includes(equipeName)) {
+          UI.showMessage("mensagemAdmin", "Erro: Equipe já existe.", "error");
+          UI.setLoading(form.querySelector('button'), false);
+          return;
+        }
+
+        State.equipes[`_equipe_${equipeName.replace(/\s/g, '_').toLowerCase()}`] = equipeName;
+        State.saveAll();
+        UserInterface.updateTeamDropdown();
+        UI.showMessage("mensagemAdmin", `Equipe ${equipeName} criada com sucesso!`, "success");
+        form.reset();
+        UI.setLoading(form.querySelector('button'), false);
+      }
+    };
+
+    // Report Generation
+    const Reports = {
+      generatePDF: () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const semana = document.getElementById("semanasSelect")?.value;
+        const dados = State.valoresSemanais[semana];
+
+        if (!dados || Object.keys(dados).length === 0) {
+          UI.showMessage("mensagem", "Nenhum dado disponível para gerar o PDF.", "error");
+          return;
+        }
+
+        let y = 10;
+        doc.setFontSize(16);
+        doc.text("Relatório Semanal de Valores", 105, y, null, null, "center");
+        y += 10;
+        doc.setFontSize(12);
+        doc.text(`Semana: ${semana}`, 105, y, null, null, "center");
+        y += 10;
+
+        let totalGeral = 0;
+        for (const usuario in dados) {
+          const equipe = State.equipes[usuario] || usuario;
+          const valores = Array.isArray(dados[usuario]) ? dados[usuario] : [];
+          const total = valores.reduce((a, b) => a + parseFloat(b.valor), 0) || 0;
+          totalGeral += total;
+
+          doc.setFont(undefined, "bold");
+          doc.text(`Equipe: ${equipe}`, 10, y);
+          y += 6;
+
+          doc.setFont(undefined, "normal");
+          if (valores.length > 0) {
+            valores.forEach(item => {
+              doc.text(`Valor: ${Utils.formatCurrency(item.valor)}`, 10, y);
+              y += 5;
+              doc.text(`Observação: ${item.observacao || "-"}`, 10, y);
+              y += 5;
+            });
+          } else {
+            doc.text("Valores: -", 10, y);
+            y += 5;
+            doc.text("Observações: -", 10, y);
+            y += 5;
+          }
+
+          doc.text(`Total: ${Utils.formatCurrency(total)}`, 10, y);
+          y += 10;
+        }
+
+        doc.setFont(undefined, "bold");
+        doc.text(`Total Geral: ${Utils.formatCurrency(totalGeral)}`, 10, y);
+        doc.save(`relatorio-semanal-${semana.replace(/[/]/g, '-')}.pdf`);
+      }
+    };
+
+    // Theme Management
+    const Theme = {
+      toggle: () => {
+        const newTheme = State.theme === 'light' ? 'dark' : 'light';
+        State.theme = newTheme;
+        document.body.classList.toggle('dark-mode', newTheme === 'dark');
+        State.saveAll();
+      },
+      init: () => {
+        if (State.theme === 'dark') {
+          document.body.classList.add('dark-mode');
+        }
+      }
+    };
+
+    // Initialize
+    Storage.loadData();
+    migrateData();
+    Theme.init();
+
+    // Event Listeners
+    document.getElementById("loginForm")?.addEventListener("submit", Auth.login);
+    document.getElementById("previewModal")?.addEventListener("click", (e) => {
+      if (e.target === document.getElementById("previewModal")) {
+        Modal.closePreview();
+      }
     });
 
-    // Exemplo de logout
-    document.getElementById('logout')?.addEventListener('click', () => {
-      document.getElementById('dashboard').classList.add('hidden');
-      document.getElementById('login').classList.remove('hidden');
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') Modal.closePreview();
+      if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+        const form = e.target.closest('form');
+        if (form) form.dispatchEvent(new Event('submit', { cancelable: true }));
+      }
     });
 
-    // Exemplo de voltar do comprovante
-    document.getElementById('back')?.addEventListener('click', () => {
-      document.getElementById('comprovante').classList.add('hidden');
-      document.getElementById('dashboard').classList.remove('hidden');
-    });
+    // Global Error Handler
+    window.onerror = (message, source, lineno, colno, error) => {
+      console.error(`Erro global: ${message} em ${source}:${lineno}:${colno}`, error);
+      UI.showMessage('mensagem', 'Erro interno no sistema. Verifique o console.', 'error');
+    };
 
-    // Carregar dados iniciais
-    window.addEventListener('load', () => {
-      const data = JSON.parse(localStorage.getItem('dados') || '{}');
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('login').classList.remove('hidden');
-    });
+    // Expose global functions
+    window.voltarLogin = Auth.logout;
+    window.closePreviewModal = Modal.closePreview;
+    window.toggleTheme = Theme.toggle;
+    window.UserInterface = UserInterface;
+    window.Data = Data;
+    window.Modal = Modal;
+    window.Admin = Admin;
+    window.Reports = Reports;
   </script>
 </body>
 </html>
