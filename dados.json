@@ -1,64 +1,58 @@
 {
   "usuarios": [
     {
+      "usuario": "admin",
+      "senha": "1234",
+      "tipo": "admin",
+      "token": "ed473c21-df80-4c80-9186-8c82b7bcc8a6"
+    },
+    {
       "usuario": "financeiro",
       "senha": "1234",
       "tipo": "financeiro",
-      "token": "e505f6ce-849a-4662-8f78-73e4f812c593"
+      "token": "7f93c51c-d149-412e-94b9-05638c6138cd"
     },
     {
       "usuario": "brunno",
       "senha": "1234",
       "tipo": "comum",
-      "token": "a8cb678b-c042-4f8b-a0ba-25a963b2565f"
+      "token": "d7e06d47-b1bf-49de-8227-4418ef7ee71a"
     },
     {
       "usuario": "cauane",
       "senha": "1234",
       "tipo": "comum",
-      "token": "1531274e-aeb8-41ec-aad9-323f2f12f0fa"
+      "token": "e6934e37-10eb-43d4-a3e5-adaeb37a92ed"
     },
     {
       "usuario": "gabi",
       "senha": "1234",
       "tipo": "comum",
-      "token": "1978f195-2d77-415c-bd67-54819c54d078"
+      "token": "c24c5ff3-fa7b-4a32-af5e-d4bd5dac6885"
     },
     {
       "usuario": "thiago",
       "senha": "1234",
       "tipo": "comum",
-      "token": "bd15a8a5-a38f-4544-984a-5eebaaef8688"
+      "token": "e6749f5a-5908-4276-8135-d473a99d24e4"
     },
     {
       "usuario": "suely",
       "senha": "1234",
       "tipo": "comum",
-      "token": "cdc7c7f5-2502-41d7-bfb7-0dca22fc67de"
+      "token": "31be7eb9-e55f-4f9d-8a9c-04e6cdeda711"
     },
     {
       "usuario": "geovana",
       "senha": "1234",
       "tipo": "comum",
-      "token": "bff824a1-12dc-4ebd-8281-737fb30bde18"
+      "token": "ed29a40d-6e84-40dc-90c9-14508044c31b"
     },
     {
       "usuario": "lorena",
       "senha": "1234",
       "tipo": "comum",
-      "token": "cb3c07ea-c8c8-455e-89df-c51fe86eef4b"
-    },
-    {
-      "usuario": "brunnoadmin",
-      "senha": "brunno2912@",
-      "tipo": "admin",
-      "token": "a6331043-484a-496a-b0a2-12e760a9293f"
-    },
-    {
-      "usuario": "teste",
-      "senha": "12345678",
-      "tipo": "comum",
-      "token": "342a1083-fdc9-4c22-a6ec-75865d750a84"
+      "token": "6547bb32-2368-4193-a0c1-1dd2b6cfe6c9"
     }
   ],
   "equipes": {
@@ -70,13 +64,8 @@
     "lorena": "Maanaim",
     "felipe": "Estevans",
     "luana": "Estevans",
-    "gabi": "Estevans",
-    "teste": "Bem Aventurados"
+    "gabi": "Estevans"
   },
-  "valoresSemanais": {
-    "18/05/2025 a 24/05/2025": {
-      "brunno": []
-    }
-  },
-  "theme": "dark"
+  "valoresSemanais": {},
+  "theme": "light"
 }
