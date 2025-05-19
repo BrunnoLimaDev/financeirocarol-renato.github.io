@@ -4,61 +4,61 @@
       "usuario": "admin",
       "senha": "1234",
       "tipo": "admin",
-      "token": "e05212bd-8afa-4838-9b83-8be41a31f9c1"
+      "token": "818fd9cc-923d-46cb-bd28-e86094e0eca0"
     },
     {
       "usuario": "financeiro",
       "senha": "1234",
       "tipo": "financeiro",
-      "token": "f49b55b7-3320-450c-a364-d0ace71e7d15"
+      "token": "d4b40b72-fede-407e-acb0-00b80cd0d004"
     },
     {
       "usuario": "brunno",
       "senha": "1234",
       "tipo": "comum",
-      "token": "c84d2ec4-4d98-4821-ac91-7611c6f11805"
+      "token": "074246fe-f95b-49cb-8e55-e53b7fe97122"
     },
     {
       "usuario": "cauane",
       "senha": "1234",
       "tipo": "comum",
-      "token": "8314e30e-1a83-4614-ba33-1a07b52c0885"
+      "token": "4278800b-9e03-4f76-a771-5dc106af1477"
     },
     {
       "usuario": "gabi",
       "senha": "1234",
       "tipo": "comum",
-      "token": "30903880-5de9-4c52-b8a2-9903933069ca"
+      "token": "0c8d29e7-b9f2-4c6d-9327-ca7d97799690"
     },
     {
       "usuario": "thiago",
       "senha": "1234",
       "tipo": "comum",
-      "token": "7af57484-6758-48a3-87ba-aae82120034b"
+      "token": "196a1011-2194-4035-a71a-0e7b448b7dd1"
     },
     {
       "usuario": "suely",
       "senha": "1234",
       "tipo": "comum",
-      "token": "be40c837-2f39-40c7-9daa-196599542301"
+      "token": "dccfa8dd-2e5c-4515-a2dd-a54155a663c1"
     },
     {
       "usuario": "geovana",
       "senha": "1234",
       "tipo": "comum",
-      "token": "840768fe-b9d8-4327-91b8-320c846e56b6"
+      "token": "07c84ad1-1a7d-42cf-a1c5-6ef5a17b410e"
     },
     {
       "usuario": "lorena",
       "senha": "1234",
       "tipo": "comum",
-      "token": "dad4f3ea-1da8-4a5c-95cd-6cce0bb175b2"
+      "token": "37e49393-29a7-4e66-9081-4e6fdda5c89b"
     }
   ],
   "equipes": {
     "brunno": "Bem Aventurados",
     "cauane": "Voz que Clama",
-    "thiago": "Insaci√°veis",
+    "thiago": "Insaci·veis",
     "suely": "Obstinados",
     "geovana": "Sheepers",
     "lorena": "Maanaim",
@@ -69,5 +69,5 @@
   "valoresSemanais": {
     "18/05/2025 a 24/05/2025": {}
   },
-  "theme": "dark"
+  "theme": "light"
 }
