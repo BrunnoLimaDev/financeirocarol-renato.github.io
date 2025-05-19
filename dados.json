@@ -58,7 +58,7 @@
   "equipes": {
     "brunno": "Bem Aventurados",
     "cauane": "Voz que Clama",
-    "thiago": "Insaci·veis",
+    "thiago": "Insaci√°veis",
     "suely": "Obstinados",
     "geovana": "Sheepers",
     "lorena": "Maanaim",
@@ -67,5 +67,5 @@
     "gabi": "Estevans"
   },
   "valoresSemanais": {},
-  "theme": "light"
+  "theme": "dark"
 }
