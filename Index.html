@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatório Semanal de Valores</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+  <header class="bg-blue-600 text-white p-4">
+    <h1 class="text-2xl font-bold">Relatório Semanal de Valores</h1>
+  </header>
+
+  <main class="flex-grow p-4">
+    <div id="loading" class="text-center">
+      <p>Carregando dados...</p>
+    </div>
+
+    <div id="login" class="max-w-md mx-auto bg-white p-6 rounded shadow-md hidden">
+      <h2 class="text-xl font-bold mb-4">Login</h2>
+      <form id="loginForm">
+        <div class="mb-4">
+          <label for="username" class="block text-sm font-medium">Usuário</label>
+          <input type="text" id="username" class="w-full border rounded p-2" required />
+        </div>
+        <div class="mb-4">
+          <label for="password" class="block text-sm font-medium">Senha</label>
+          <input type="password" id="password" class="w-full border rounded p-2" required />
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Entrar
+        </button>
+      </form>
+    </div>
+
+    <div id="dashboard" class="max-w-4xl mx-auto bg-white p-6 rounded shadow-md hidden">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Bem-vindo</h2>
+        <button id="logout" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+          Sair
+        </button>
+      </div>
+      <div id="content"></div>
+    </div>
+
+    <div id="comprovante" class="max-w-4xl mx-auto bg-white p-6 rounded shadow-md hidden">
+      <h2 class="text-xl font-bold mb-4">Visualizar Comprovante</h2>
+      <div id="comprovanteContent"></div>
+      <button id="back" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">
+        Voltar
+      </button>
+    </div>
+  </main>
+
+  <footer class="bg-gray-800 text-white p-4 text-center">
+    <p>Este sistema está hospedado no GitHub Pages. Os dados são salvos automaticamente no repositório GitHub.</p>
+  </footer>
+
+  <script>
+    // Configuração da API do GitHub
+    const GITHUB_TOKEN = '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'; // Substitua pelo seu token de acesso pessoal
+    const OWNER = 'BrunnoLimaDev'; // Substitua pelo seu usuário do GitHub
+    const REPO = 'financeirocarol-renato.github.io'; // Substitua pelo nome do repositório
+    const PATH = 'dados.json'; // Caminho do arquivo no repositório
+
+    // Função para salvar dados no GitHub
+    async function saveToGitHub(data) {
+      try {
+        // Obter o conteúdo atual do arquivo (para atualizar, precisamos do SHA)
+        const response = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            Accept: 'application/vnd.github.v3+json',
+          },
+        });
+        const fileData = await response.json();
+        const sha = fileData.sha;
+
+        // Enviar o novo conteúdo
+        const content = btoa(JSON.stringify(data)); // Codificar em base64
+        const updateResponse = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            Accept: 'application/vnd.github.v3+json',
+          },
+          body: JSON.stringify({
+            message: 'Atualizar dados.json automaticamente',
+            content: content,
+            sha: sha,
+          }),
+        });
+
+        if (updateResponse.ok) {
+          console.log('Dados salvos no GitHub com sucesso.');
+        } else {
+          console.error('Erro ao salvar no GitHub:', updateResponse.statusText);
+        }
+      } catch (error) {
+        console.error('Erro ao salvar no GitHub:', error);
+      }
+    }
+
+    // Função para salvar dados no localStorage e no GitHub
+    function saveData(data) {
+      localStorage.setItem('dados', JSON.stringify(data));
+      saveToGitHub(data); // Salvar automaticamente no GitHub
+    }
+
+    // Exemplo de lógica de login (adapte conforme necessário)
+    document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      // Lógica de autenticação aqui
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      // Carregar dados iniciais
+      const data = JSON.parse(localStorage.getItem('dados') || '{}');
+      saveData(data); // Salvar no GitHub ao iniciar
+    });
+
+    // Exemplo de logout
+    document.getElementById('logout')?.addEventListener('click', () => {
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('login').classList.remove('hidden');
+    });
+
+    // Exemplo de voltar do comprovante
+    document.getElementById('back')?.addEventListener('click', () => {
+      document.getElementById('comprovante').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+    });
+
+    // Carregar dados iniciais
+    window.addEventListener('load', () => {
+      const data = JSON.parse(localStorage.getItem('dados') || '{}');
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('login').classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
