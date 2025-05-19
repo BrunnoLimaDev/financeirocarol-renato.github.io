@@ -1,80 +1,82 @@
 {
   "usuarios": [
     {
-      "usuario": "admin",
-      "senha": "1234",
-      "tipo": "admin",
-      "token": "d615e31b-ec17-451d-a71c-72af2e8f3955"
-    },
-    {
       "usuario": "financeiro",
       "senha": "1234",
       "tipo": "financeiro",
-      "token": "eedb136c-dcac-4c51-9d0e-c2df079378a2"
+      "token": "e505f6ce-849a-4662-8f78-73e4f812c593"
     },
     {
       "usuario": "brunno",
       "senha": "1234",
       "tipo": "comum",
-      "token": "351d6faa-b061-4b9c-bf6c-28aebd4149cd"
+      "token": "a8cb678b-c042-4f8b-a0ba-25a963b2565f"
     },
     {
       "usuario": "cauane",
       "senha": "1234",
       "tipo": "comum",
-      "token": "83f0df89-d74b-4f12-a1ac-7448222e397b"
+      "token": "1531274e-aeb8-41ec-aad9-323f2f12f0fa"
     },
     {
       "usuario": "gabi",
       "senha": "1234",
       "tipo": "comum",
-      "token": "6feff398-30aa-4c0f-84c4-ac882e7d9758"
+      "token": "1978f195-2d77-415c-bd67-54819c54d078"
     },
     {
       "usuario": "thiago",
       "senha": "1234",
       "tipo": "comum",
-      "token": "0720214f-1cb8-4b96-bb33-468dcb410424"
+      "token": "bd15a8a5-a38f-4544-984a-5eebaaef8688"
     },
     {
       "usuario": "suely",
       "senha": "1234",
       "tipo": "comum",
-      "token": "98f1a585-80bf-4ebb-a052-f27fd0520017"
+      "token": "cdc7c7f5-2502-41d7-bfb7-0dca22fc67de"
     },
     {
       "usuario": "geovana",
       "senha": "1234",
       "tipo": "comum",
-      "token": "8788f90c-fdbf-4d11-b43f-81890fb9149b"
+      "token": "bff824a1-12dc-4ebd-8281-737fb30bde18"
     },
     {
       "usuario": "lorena",
       "senha": "1234",
       "tipo": "comum",
-      "token": "513d9a21-8f9f-413f-a859-f400276492a9"
+      "token": "cb3c07ea-c8c8-455e-89df-c51fe86eef4b"
     },
     {
       "usuario": "brunnoadmin",
       "senha": "brunno2912@",
       "tipo": "admin",
-      "token": "bf98ac1e-99aa-4c58-a715-51de52ba4a90"
+      "token": "a6331043-484a-496a-b0a2-12e760a9293f"
+    },
+    {
+      "usuario": "teste",
+      "senha": "12345678",
+      "tipo": "comum",
+      "token": "342a1083-fdc9-4c22-a6ec-75865d750a84"
     }
   ],
   "equipes": {
     "brunno": "Bem Aventurados",
     "cauane": "Voz que Clama",
-    "thiago": "Insaci√°veis",
+    "thiago": "Insaci·veis",
     "suely": "Obstinados",
     "geovana": "Sheepers",
     "lorena": "Maanaim",
     "felipe": "Estevans",
     "luana": "Estevans",
-    "gabi": "Estevans"
+    "gabi": "Estevans",
+    "teste": "Bem Aventurados"
   },
   "valoresSemanais": {
-    "20/04/2025 a 26/04/2025": {
-      "brunno": []
+    "18/05/2025 a 24/05/2025": {
+      "brunno": [],
+      "teste": []
     }
   },
   "theme": "dark"
