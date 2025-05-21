@@ -4,61 +4,61 @@
       "usuario": "admin",
       "senha": "1234",
       "tipo": "admin",
-      "token": "ed473c21-df80-4c80-9186-8c82b7bcc8a6"
+      "token": "e05212bd-8afa-4838-9b83-8be41a31f9c1"
     },
     {
       "usuario": "financeiro",
       "senha": "1234",
       "tipo": "financeiro",
-      "token": "7f93c51c-d149-412e-94b9-05638c6138cd"
+      "token": "f49b55b7-3320-450c-a364-d0ace71e7d15"
     },
     {
       "usuario": "brunno",
       "senha": "1234",
       "tipo": "comum",
-      "token": "d7e06d47-b1bf-49de-8227-4418ef7ee71a"
+      "token": "c84d2ec4-4d98-4821-ac91-7611c6f11805"
     },
     {
       "usuario": "cauane",
       "senha": "1234",
       "tipo": "comum",
-      "token": "e6934e37-10eb-43d4-a3e5-adaeb37a92ed"
+      "token": "8314e30e-1a83-4614-ba33-1a07b52c0885"
     },
     {
       "usuario": "gabi",
       "senha": "1234",
       "tipo": "comum",
-      "token": "c24c5ff3-fa7b-4a32-af5e-d4bd5dac6885"
+      "token": "30903880-5de9-4c52-b8a2-9903933069ca"
     },
     {
       "usuario": "thiago",
       "senha": "1234",
       "tipo": "comum",
-      "token": "e6749f5a-5908-4276-8135-d473a99d24e4"
+      "token": "7af57484-6758-48a3-87ba-aae82120034b"
     },
     {
       "usuario": "suely",
       "senha": "1234",
       "tipo": "comum",
-      "token": "31be7eb9-e55f-4f9d-8a9c-04e6cdeda711"
+      "token": "be40c837-2f39-40c7-9daa-196599542301"
     },
     {
       "usuario": "geovana",
       "senha": "1234",
       "tipo": "comum",
-      "token": "ed29a40d-6e84-40dc-90c9-14508044c31b"
+      "token": "840768fe-b9d8-4327-91b8-320c846e56b6"
     },
     {
       "usuario": "lorena",
       "senha": "1234",
       "tipo": "comum",
-      "token": "6547bb32-2368-4193-a0c1-1dd2b6cfe6c9"
+      "token": "dad4f3ea-1da8-4a5c-95cd-6cce0bb175b2"
     }
   ],
   "equipes": {
     "brunno": "Bem Aventurados",
     "cauane": "Voz que Clama",
-    "thiago": "Insaci·veis",
+    "thiago": "Insaci√°veis",
     "suely": "Obstinados",
     "geovana": "Sheepers",
     "lorena": "Maanaim",
@@ -66,6 +66,8 @@
     "luana": "Estevans",
     "gabi": "Estevans"
   },
-  "valoresSemanais": {},
-  "theme": "light"
+  "valoresSemanais": {
+    "18/05/2025 a 24/05/2025": {}
+  },
+  "theme": "dark"
 }
